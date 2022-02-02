@@ -153,7 +153,9 @@ func (client UptimeRobotApiClient) GetMonitor(id int) (m Monitor, err error) {
 			// PS: There seems to be a bug in the UR api as it never returns this value
 			m.HTTPAuthType = intToString(monitorHTTPAuthType, int(val.(float64)))
 		}
-		m.HTTPMethod = intToString(monitorHTTPMethod, int(monitor["http_method"].(float64)))
+		if method := monitor["http_method"]; method != nil {
+			m.HTTPMethod = intToString(monitorHTTPMethod, int(monitor["http_method"].(float64)))
+		}
 		m.HTTPUsername = monitor["http_username"].(string)
 		m.HTTPPassword = monitor["http_password"].(string)
 		break
