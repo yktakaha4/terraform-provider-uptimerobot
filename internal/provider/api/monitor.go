@@ -243,6 +243,11 @@ func (client UptimeRobotApiClient) CreateMonitor(req MonitorCreateRequest) (m Mo
 		data.Add("http_auth_type", fmt.Sprintf("%d", monitorHTTPAuthType[req.HTTPAuthType]))
 		data.Add("http_username", req.HTTPUsername)
 		data.Add("http_password", req.HTTPPassword)
+		if req.HTTPMethod == "POST" {
+			data.Add("post_type", "1")
+			data.Add("post_content_type", "0")
+			data.Add("post_value", "{}")
+		}
 		break
 	}
 
