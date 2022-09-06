@@ -115,6 +115,29 @@ func resourceMonitor() *schema.Resource {
 				Type:     schema.TypeMap,
 				Optional: true,
 			},
+			"custom_http_statuses": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				MinItems: 1,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"up": {
+							Type: schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem: &schema.Schema{Type: schema.TypeString},
+						},
+						"down": {
+							Type: schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem: &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
 			// TODO - mwindows
 		},
 	}
@@ -171,6 +194,15 @@ func resourceMonitorCreate(d *schema.ResourceData, m interface{}) error {
 	for k, v := range httpHeaderMap {
 		req.CustomHTTPHeaders[k] = v.(string)
 	}
+
+	customHttpStatuses := d.Get("custom_http_statuses").(map[string]interface{})
+	if customHttpStatuses != nil {
+		req.CustomHTTPStatuses = uptimerobotapi.MonitorCustomHTTPStatuses{
+			Up: customHttpStatuses["up"].([]int),
+			Down: customHttpStatuses["down"].([]int),
+		}
+	}
+
 
 	monitor, err := m.(uptimerobotapi.UptimeRobotApiClient).CreateMonitor(req)
 	if err != nil {
